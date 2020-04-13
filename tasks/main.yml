@@ -1,42 +1,42 @@
 ---
-# tasks file for arillso.shorewall
+# tasks file for kinou74.shorewall
 
-- name: Add OS specific variables
-  include_vars: '{{ item }}'
-  with_first_found:
-    - 'vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml'
-    - 'vars/{{ ansible_distribution }}.yml'
-    - 'vars/{{ ansible_os_family }}.yml'
-    - 'vars/defaults.yml'
+# - name: Add OS specific variables
+#   include_vars: '{{ item }}'
+#   with_first_found:
+#     - 'vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml'
+#     - 'vars/{{ ansible_distribution }}.yml'
+#     - 'vars/{{ ansible_os_family }}.yml'
+#     - 'vars/defaults.yml'
+#   tags:
+#     - configuration
+#     - packages
+
+# - name: Remove incompatible firewall packages
+#   become: true
+#   package:
+#     name: '{{ item }}'
+#     state: absent
+#   with_items: '{{ shorewall_incompatible_packages|default([]) }}'
+#   when: (shorewall_package_state != "absent")
+#   tags:
+#     - packages
+
+# - name: get shorewall version
+#   command: shorewall version
+#   register: register_shorewall_version
+#   changed_when: False
+
+# - name: shorewall version
+#   set_fact:
+#     shorewall_version: '{{ register_shorewall_version.stdout }}'
+
+- import_tasks: shorewall.yml
   tags:
     - configuration
     - packages
 
-- name: Remove incompatible firewall packages
-  become: true
-  package:
-    name: '{{ item }}'
-    state: absent
-  with_items: '{{ shorewall_incompatible_packages|default([]) }}'
-  when: (shorewall_package_state != "absent")
-  tags:
-    - packages
-
-- name: get shorewall version
-  command: shorewall version
-  register: register_shorewall_version
-  changed_when: False
-
-- name: shorewall version
-  set_fact:
-    shorewall_version: '{{ register_shorewall_version.stdout }}'
-
-- include_tasks: shorewall.yml
-  tags:
-    - configuration
-    - packages
-
-- include_tasks: shorewall6.yml
+- import_tasks: shorewall6.yml
   when: "'scope' in ansible_default_ipv6 and ansible_default_ipv6.scope == 'global'"
   tags:
     - configuration

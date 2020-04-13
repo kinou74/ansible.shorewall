@@ -9,7 +9,7 @@ Ansible role which installs and configures [Shorewall](http://shorewall.org/) an
 ## Installation
 
 ```bash
-ansible-galaxy install arillso.shorewall
+ansible-galaxy install kinou74.shorewall
 ```
 
 ## Requirements
@@ -30,7 +30,7 @@ _Note:_ The Shorewall (IPv4) variables are prefixed by `shorewall_`, whereas the
 | Variable                | Dictionary / Options                                                                                                                                                                                                                            |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | shorewall_package_state | "present", "latest", "absent".                                                                                                                                                                                                                  |
-| shorewall_startup       | "1" or "0"                                                                                                                                                                                                                                      |
+| shorewall_startup_enabled       | True or False                                                                                                                                                                                                                                      |
 | shorewall_conf          | _this variable uses standard option / value pairs_                                                                                                                                                                                              |
 | shorewall_interfaces    | `zone`, `interface`, `options`                                                                                                                                                                                                                  |
 | shorewall_zones         | `zone`, `type`, `options`, `options_in`, `options_out`                                                                                                                                                                                          |
@@ -47,9 +47,14 @@ See the Ansible [package module](http://docs.ansible.com/ansible/package_module.
 
 It allows you to control whether Shorewall and dependencies should be either installed (_"present"_), installed / upgraded to their most recent version (_"latest"_) or should be removed (_"absent"_).
 
-### shorewall_startup - Shorewall startup behaviour
+### shorewall_startup_enabled - Shorewall startup behaviour
 
 This updates the `/etc/default/shorewall` file's `startup` option to either enable (_"1"_) startup (using the `service` or `systemctl` commands) or disable it (_"0"_).
+
+This also updates the `/etc/shorewall(6)/shorewall(6).conf` files's `startup_enabled` option to either (_"Yes"_) or (_"No"_).
+
+At last, it controls the `shorewall` and `shorewall6` `systemctl` services state.
+
 
 ### shorewall_conf - Shorewall Configuration
 
@@ -186,7 +191,7 @@ Assign any shell variables that you need in the `/etc/shorewall/params` file. Se
 ```yml
 - hosts: all
   roles:
-    - arillso.shorewall
+    - kinou74.shorewall
 ```
 
 ## Changelog

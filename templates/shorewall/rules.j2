@@ -1,20 +1,36 @@
 # {{ ansible_managed }}
-# Shorewall version 4 - Rules File
+# Shorewall -- /etc/shorewall/rules
 #
 # For information on the settings in this file, type "man shorewall-rules"
 #
 # The manpage is also online at
 # http://www.shorewall.net/manpages/shorewall-rules.html
 #
-######################################################################################################################################################################################################
-#ACTION  SOURCE  DEST  PROTO  DEST  SOURCE   ORIGINAL  RATE   USER/  MARK  CONNLIMIT  TIME  HEADERS  SWITCH  HELPER
-#                             PORT  PORT(S)  DEST      LIMIT  GROUP
+##############################################################################################################################################################
+#ACTION         SOURCE          DEST            PROTO   DPORT   SPORT   ORIGDEST        RATE    USER    MARK    CONNLIMIT       TIME    HEADERS SWITCH  HELPER
 
 {% for section in shorewall_rules %}
-{{ '' if (shorewall_version|float < 4.6) else '?' }}SECTION {{ section.section }}
+{# {{ '' if (shorewall_version|float < 4.6) else '?' }}SECTION {{ section.section }} #}
+{{ '' if ( shorewall_version is version('4.6', '<') ) else '?' }}SECTION {{ section.section }}
 {% for rule in section.rules %}
 {% if rule.get('when', True) %}
-{{ rule.action | default('-') }} {{ rule.source | default('-') }} {{ rule.dest | default('-') }} {{ rule.proto | default('-') }} {{ rule.dest_port | default('-') }} {{ rule.source_port | default('-') }} {{ rule.original_dest | default('-') }} {{ rule.rate_limit | default('-') }} {{ rule.user_group | default('-') }} {{ rule.mark | default('-') }} {{ rule.connlimit | default('-') }} {{ rule.time | default('-') }} {{ rule.headers | default('-') }} {{ rule.switch | default('-') }} {{ rule.helper | default('-') }}
+{% set action = rule.action|default('-') %}
+{% set source = rule.source | default('-') %}
+{% set dest = rule.dest | default('-') %}
+{% set proto = rule.proto | default('-') %}
+{% set dest_port = rule.dest_port | default('-') %}
+{% set source_port = rule.source_port | default('-') %}
+{% set original_dest = rule.original_dest | default('-') %}
+{% set rate_limit = rule.rate_limit | default('-') %}
+{% set user_group = rule.user_group | default('-') %}
+{% set mark = rule.mark | default('-') %}
+{% set connlimit = rule.connlimit | default('-') %}
+{% set time = rule.time | default('-') %}
+{% set headers = rule.headers | default('-') %}
+{% set switch = rule.switch | default('-') %}
+{% set helper = rule.helper | default('-') %}
+{# "%-20s"|format(rule.action | default('-')) }} {{ source.ljust(8) }} {{ rule.dest | default('-') }} {{ rule.proto | default('-') }} {{ rule.dest_port | default('-') }} {{ rule.source_port | default('-') }} {{ rule.original_dest | default('-') }} {{ rule.rate_limit | default('-') }} {{ rule.user_group | default('-') }} {{ rule.mark | default('-') }} {{ rule.connlimit | default('-') }} {{ rule.time | default('-') }} {{ rule.headers | default('-') }} {{ rule.switch | default('-') }}  {{ rule.helper | default('-') #}
+{{ "%-15s"|format( rule.action|default('-') ) }} {{ "%-15s"|format( rule.source|default('-') ) }} {{ "%-15s"|format( rule.dest|default('-') ) }} {{ "%-7s"|format( rule.proto|default('-') ) }} {{ "%-7s"|format( rule.dest_port|default('-') ) }} {{ "%-7s"|format( rule.source_port|default('-') ) }} {{ "%-15s"|format( rule.original_dest|default('-') ) }} {{ "%-7s"|format( rule.rate_limit|default('-') ) }} {{ "%-7s"|format( rule.user_group|default('-') ) }} {{ "%-7s"|format( rule.mark|default('-') ) }} {{ "%-15s"|format( rule.connlimit|default('-') ) }} {{ "%-7s"|format( rule.time|default('-') ) }} {{ "%-7s"|format( rule.headers|default('-') ) }} {{ "%-7s"|format( rule.switch|default('-') ) }} {{ "%-7s"|format( rule.helper|default('-') ) }}
 {% endif %}
 {% endfor %}
 

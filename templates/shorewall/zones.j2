@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-# Shorewall version 4 - Zones File
+# Shorewall -- /etc/shorewall/zones
 #
 # For information about this file, type "man shorewall-zones"
 #
@@ -7,9 +7,8 @@
 # http://www.shorewall.net/manpages/shorewall-zones.html
 #
 ###############################################################################
-#ZONE   TYPE        OPTIONS     IN          OUT
-#                               OPTIONS     OPTIONS
+#ZONE		TYPE		OPTIONS		IN_OPTIONS	OUT_OPTIONS
 
 {% for i in shorewall_zones %}
-{{ i.zone }} {{ i.type }} {{ i.options | default('-') }} {{ i.options_in | default('-') }} {{ i.options_out | default('-') }}
+{{ i.zone }}                {{ i.type }}        {{ i.options | default('-') }}      {{ i.options_in | default('-') }} {{ i.options_out | default('-') }}
 {% endfor %}

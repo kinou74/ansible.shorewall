@@ -1,20 +1,12 @@
 ---
-# handlers file for arillso.shorewall
+# handlers file for kinou74.shorewall
 
-- name: enable shorewall
-  become: true
-  service: name={{ shorewall_service_name }} enabled=yes state=started
-  when: (shorewall_package_state != "absent")
-
-- name: enable shorewall6
-  become: true
-  service: name={{ shorewall6_service_name }} enabled=yes state=started
-  when: (shorewall6_package_state != "absent")
-
-- name: restart shorewall
+- name: service shorewall restart
   become: true
   service: name={{ shorewall_service_name }} state=restarted
+  when: (shorewall_package_state != "absent" and shorewall_startup_enabled)
 
-- name: restart shorewall6
+- name: service shorewall6 restart
   become: true
   service: name={{ shorewall6_service_name }} state=restarted
+  when: (shorewall6_package_state != "absent" and shorewall6_startup_enabled)

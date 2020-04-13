@@ -1,80 +1,91 @@
 ---
-# tasks file for arillso.shorewall
+# tasks file for kinou74.shorewall
 
-- name: Gather Shorewall6 configuration variables
-  set_fact:
-    shorewall6_conf: '{{ shorewall6_conf_base|combine(shorewall6_conf) }}'
-  tags:
-    - configuration
-    - packages
-
-- name: Install Shorewall6 and dependencies
+- name: "{{ 'Uninstall' if shorewall_package_state == 'absent' else 'Install' }} Shorewall6 packages"
   become: true
   package:
     name: '{{ item }}'
     state: '{{ shorewall6_package_state }}'
   with_items: '{{ shorewall6_packages }}'
-  notify:
-    - enable shorewall6
+  # notify:
+  #   - enable shorewall6
   tags:
     - packages
 
+# continue with configuration is state != "absent"
 - block:
-    - name: Obtain Shorewall6 version
-      command: shorewall6 version
-      register: shorewall6_version_result
-      changed_when: False
 
-    - name: Convert Shorewall6 version var
-      set_fact:
-        shorewall6_version: "{{ '.'.join( shorewall6_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
+  - name: Obtain Shorewall6 version
+    command: shorewall6 version
+    register: shorewall6_version_result
+    changed_when: False
 
-    - name: Generate Shorewall6 configuration files
-      become: true
-      template:
-        dest: '/etc/shorewall6/{{ item }}'
-        src: 'shorewall6/{{ item }}.j2'
-        owner: root
-        group: root
-        mode: 0640
-      with_items:
-        - shorewall6.conf
-        - params
-        - interfaces
-        - snat
-        - masq
-        - zones
-        - policy
-        - rules
-        - hosts
-        - tunnels
-      notify:
-        - restart shorewall6
+  - name: Convert Shorewall6 version var
+    set_fact:
+      shorewall6_version: "{{ '.'.join( shorewall6_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
 
-    - name: Verify Shorewall6 configuration
-      become: true
-      command: shorewall6 check
-      changed_when: False
-      tags:
-        - tests
+  - name: Gather Shorewall6 configuration variables
+    set_fact:
+      shorewall6_conf: '{{ shorewall6_conf_base|combine(shorewall6_conf) }}'
+    tags:
+      - configuration
+      - packages
 
-    - name: Generate Shorewall6 service configuration
-      become: true
-      template:
-        dest: /etc/default/shorewall6
-        src: default/shorewall6.j2
-        owner: root
-        group: root
-        mode: 0640
-      notify:
-        - restart shorewall6
+  - name: Generate Shorewall6 configuration files
+    become: true
+    template:
+      dest: '/etc/shorewall6/{{ item }}'
+      src: 'shorewall6/{{ item }}.j2'
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+#        - shorewall6.conf
+      - params
+      - interfaces
+#        - snat
+#        - masq
+      - zones
+      - policy
+      - rules
+#        - hosts
+#        - tunnels
+    notify:
+      - service shorewall6 restart
 
-    - name: Ensure Shorewall6 is enabled and started
-      service:
-        name: shorewall6
-        state: started
-        enabled: yes
-        use: service
+  - name: Generate Shorewall6 main configuration file
+    lineinfile:
+      dest: "/etc/shorewall6/shorewall6.conf"
+      regexp: "^{{ item.key|upper }}="
+      line: "{{ item.key|upper }}={{ item.value }}"
+      backrefs: yes
+    loop: "{{ lookup('dict', shorewall6_conf, wantlist=True) }}"
+
+  - name: Verify Shorewall6 configuration
+    become: true
+    command: shorewall6 check
+    changed_when: False
+    tags:
+      - tests
+
+  - name: Generate Shorewall6 service configuration
+    become: true
+    template:
+      dest: /etc/default/shorewall6
+      src: default/shorewall6
+      owner: root
+      group: root
+      mode: 0640
+    notify:
+      - service shorewall6 restart
+
+  - name: Configure Shorewall6 systemd service
+    service:
+      name: shorewall6
+      enabled: "{{ 'yes' if shorewall6_startup_enabled else 'no' }}"
+      state: "{{ 'started' if shorewall6_startup_enabled else 'stopped' }}"
+      use: service
+  
   when: (shorewall6_package_state != "absent")
   tags:
     - configuration
