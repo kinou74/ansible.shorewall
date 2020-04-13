@@ -1,16 +1,10 @@
 # Ansible Role: Shorewall
 
-[![Build Status](https://img.shields.io/travis/arillso/ansible.shorewall.svg?branch=master&style=popout-square)](https://travis-ci.org/arillso/ansible.shorewall) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=popout-square)](https://sbaerlo.ch/licence) [![Ansible Galaxy](http://img.shields.io/badge/ansible--galaxy-shorewall-blue.svg?style=popout-square)](https://galaxy.ansible.com/arillso/shorewall) [![Ansible Role](https://img.shields.io/ansible/role/d/24784.svg?style=popout-square)](https://galaxy.ansible.com/arillso/shorewall)
-
 ## Description
 
-Ansible role which installs and configures [Shorewall](http://shorewall.org/) and Shorewall6.
+Ansible role which installs and configures [Shorewall](http://shorewall.org/) and [Shorewall6](http://shorewall.org/IPv6Support.html).
 
-## Installation
-
-```bash
-ansible-galaxy install kinou74.shorewall
-```
+Fork from https://github.com/proacem/ansible.shorewall originally developped by [Simon Bärlocher](https://sbaerlocher.ch)
 
 ## Requirements
 
@@ -18,10 +12,9 @@ Ansible version 2.0 or better.
 
 ## Role Handlers
 
-| Name                                      | Description                                |
-| ----------------------------------------- | ------------------------------------------ |
-| `enable shorewall`, `enable shorewall6`   | Enables and starts Shorewall / Shorewall 6 |
-| `restart shorewall`, `restart shorewall6` | Restarts Shorewall / Shorewall6            |
+| Name                                                      | Description                                |
+| --------------------------------------------------------- | ------------------------------------------ |
+| `service restart shorewall`, `service restart shorewall6` | Restarts Shorewall / Shorewall6            |
 
 ## Role Variables
 
