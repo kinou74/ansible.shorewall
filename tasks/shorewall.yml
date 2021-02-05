@@ -52,6 +52,9 @@
 #       - tunnels
     notify:
       - service shorewall restart
+    tags:
+      - configuration
+
 
   - name: Generate Shorewall main configuration file
     lineinfile:
@@ -60,6 +63,8 @@
       line: "{{ item.key|upper }}={{ item.value }}"
       backrefs: yes
     loop: "{{ lookup('dict', shorewall_conf, wantlist=True) }}"
+    tags:
+      - configuration
 
   - name: Verify Shorewall configuration
     become: true
@@ -78,6 +83,8 @@
       mode: 0640
     notify:
       - service shorewall restart
+    tags:
+      - configuration
 
   - name: Configure Shorewall systemd service
     service:
@@ -85,7 +92,6 @@
       enabled: "{{ 'yes' if shorewall_startup_enabled else 'no' }}"
       state: "{{ 'started' if shorewall_startup_enabled else 'stopped' }}"
       use: service
-  
   when: (shorewall_package_state != "absent")
   tags:
     - configuration
