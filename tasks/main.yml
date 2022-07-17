@@ -32,12 +32,12 @@
 #     shorewall_version: '{{ register_shorewall_version.stdout }}'
 
 - import_tasks: shorewall.yml
-  tags:
-    - configuration
-    - packages
+  # tags:
+  #   - configuration
+  #   - packages
 
 - import_tasks: shorewall6.yml
   when: "'scope' in ansible_default_ipv6 and ansible_default_ipv6.scope == 'global'"
-  tags:
-    - configuration
-    - packages
+  # tags:
+  #   - configuration
+  #   - packages

@@ -29,7 +29,6 @@
       shorewall_conf: '{{ shorewall_conf_base|combine(shorewall_conf) }}'
     tags:
       - configuration
-      - packages
 
   - name: Generate Shorewall configuration files
     become: true
