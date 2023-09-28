@@ -38,6 +38,7 @@
       owner: root
       group: root
       mode: 0640
+      backup: true
     with_items:
 #       - shorewall.conf
       - params
